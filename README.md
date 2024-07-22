@@ -4,4 +4,4 @@ This is an university of Helsinki courses project: https://cybersecuritybase.moo
 ## environment
 - python
 - django
-- mysql
+- sqlite
