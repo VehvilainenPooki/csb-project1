@@ -3,26 +3,46 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
-from django.db import transaction
+from django.db import transaction, connection
 from .models import Account
-
 
 @login_required
 @csrf_exempt #Flaw 1: Failure of CSRF
 
-#Flaw 3: 
-#@transaction.atomic
 def transferView(request):
 	if request.method == 'POST':
 		to = User.objects.get(username=request.POST.get('to'))
 		amount = int(request.POST.get('amount'))
-		
-		#Flaw 2: A04:2021-Insecure Design
-		#if request.user.account.balance >= amount and 0 < amount:
-		request.user.account.balance -= amount
-		to.account.balance += amount
-		request.user.account.save()
-		to.account.save()
+
+		try:
+			amount = int(amount)
+
+			#Flaw 2: A04:2021-Insecure Design
+			#if 0 >= amount:
+			#	return redirect('/')
+
+			with connection.cursor() as cursor:
+				with transaction.atomic():
+						cursor.execute("SELECT balance FROM pages_account WHERE user_id = %s", [request.user.id])
+						sender_balance = cursor.fetchone()[0]
+
+						#Flaw 2: A04:2021-Insecure Design
+						#if sender_balance < amount:
+						#	return redirect('/')
+
+						cursor.execute("SELECT id FROM auth_user WHERE username = %s", [to.username])
+						recipient = cursor.fetchone()
+						if recipient is None:
+							return HttpResponse("Recipient not found", status=404)
+						recipient_id = recipient[0]
+
+						cursor.execute("UPDATE pages_account SET balance = balance - %s WHERE user_id = %s", [amount, request.user.id])
+						cursor.execute("UPDATE pages_account SET balance = balance + %s WHERE user_id = %s", [amount, recipient_id])
+				transaction.commit()
+
+		except Exception as e:
+			transaction.rollback()
+			return HttpResponse(f"An error occurred: {str(e)}", status=500)
 	
 	return redirect('/')
 
