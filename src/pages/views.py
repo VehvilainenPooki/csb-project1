@@ -23,10 +23,9 @@ def transferView(request):
 
 			with connection.cursor() as cursor:
 				with transaction.atomic():
-						cursor.execute("SELECT balance FROM pages_account WHERE user_id = %s", [request.user.id])
-						sender_balance = cursor.fetchone()[0]
-
 						#Flaw 2: A04:2021-Insecure Design
+						#cursor.execute("SELECT balance FROM pages_account WHERE user_id = %s", [request.user.id])
+						#sender_balance = cursor.fetchone()[0]
 						#if sender_balance < amount:
 						#	return redirect('/')
 
