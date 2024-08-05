@@ -15,7 +15,8 @@ def transferView(request):
 		amount = int(request.POST.get('amount'))
 
 		try:
-			amount = int(amount)
+			#Flaw 3: A03:2021-Injection
+			#amount = int(amount)
 
 			#Flaw 2: A04:2021-Insecure Design
 			#if 0 >= amount:
@@ -29,14 +30,18 @@ def transferView(request):
 						#if sender_balance < amount:
 						#	return redirect('/')
 
+
 						cursor.execute("SELECT id FROM auth_user WHERE username = %s", [to.username])
 						recipient = cursor.fetchone()
 						if recipient is None:
 							return HttpResponse("Recipient not found", status=404)
 						recipient_id = recipient[0]
 
-						cursor.execute("UPDATE pages_account SET balance = balance - %s WHERE user_id = %s", [amount, request.user.id])
-						cursor.execute("UPDATE pages_account SET balance = balance + %s WHERE user_id = %s", [amount, recipient_id])
+						#Flaw 3: A03:2021-Injection
+						#cursor.execute("UPDATE pages_account SET balance = balance - %s WHERE user_id = %s", [amount, request.user.id])
+						#cursor.execute("UPDATE pages_account SET balance = balance + %s WHERE user_id = %s", [amount, recipient_id])
+						cursor.execute("UPDATE pages_account SET balance = balance - " + str(amount) + " WHERE user_id = %s", [request.user.id])
+						cursor.execute("UPDATE pages_account SET balance = balance + " + str(amount) + " WHERE user_id = %s", [recipient_id])
 				transaction.commit()
 
 		except Exception as e:
