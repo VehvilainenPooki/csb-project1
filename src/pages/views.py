@@ -6,7 +6,9 @@ from django.contrib.auth.models import User
 from django.db import transaction, connection
 from .models import Account
 
-@login_required
+#Flaw 4: A01:2021 – Broken Access Control
+#@login_required
+
 @csrf_exempt #Flaw 1: Failure of CSRF
 
 def transferView(request):
@@ -47,7 +49,7 @@ def transferView(request):
 		except Exception as e:
 			transaction.rollback()
 			return HttpResponse(f"An error occurred: {str(e)}", status=500)
-	
+
 	return redirect('/')
 
 
