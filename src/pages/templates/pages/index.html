@@ -36,7 +36,9 @@
             </select><br/>
 
             <span>Amount:</span><br/>
-            <input type="number" name="amount"/><br/>
+            <!--Flaw 2: A04:2021-Insecure Design && Flaw 3: A03:2021-Injection-->
+            <!--<input type="number" name="amount"/><br/>-->
+            <input type="text" name="amount"/><br/>
 
             <input type="submit" value="Transfer"/>
         </form>
