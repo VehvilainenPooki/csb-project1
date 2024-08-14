@@ -37,6 +37,9 @@ def transferView(request):
 
 
 						cursor.execute("SELECT id FROM auth_user WHERE username = %s", [to.username])
+						#Flaw 5: A09:2021 – Security Logging and Monitoring Failures
+						#logger.info("Transfer: from "+ str(request.user.username) + " to " + str(to.username))
+						#logger.info("SELECT id FROM auth_user WHERE username = %s", [to.username])
 						recipient = cursor.fetchone()
 						if recipient is None:
 							return HttpResponse("Recipient not found", status=404)
@@ -48,7 +51,6 @@ def transferView(request):
 						cursor.execute("UPDATE pages_account SET balance = balance - " + str(amount) + " WHERE user_id = %s", [request.user.id])
 						cursor.execute("UPDATE pages_account SET balance = balance + " + str(amount) + " WHERE user_id = %s", [recipient_id])
 						#Flaw 5: A09:2021 – Security Logging and Monitoring Failures
-						#logger.info("Transfer: from "+ str(request.user.username) + " to " + str(to.username))
 						#logger.info("UPDATE pages_account SET balance = balance - " + str(amount) + " WHERE user_id = %s", [request.user.id])
 						#logger.info("UPDATE pages_account SET balance = balance + " + str(amount) + " WHERE user_id = %s", [recipient_id])
 				transaction.commit()
