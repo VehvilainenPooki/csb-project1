@@ -122,3 +122,30 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+#Flaw 5: A09:2021 – Security Logging and Monitoring Failures
+#LOGGING = {
+#    "version": 1,
+#    "disable_existing_loggers": False,
+#    "formatters": {
+#        "simple": {
+#            "format": "{levelname} {asctime} {message}",
+#            "style": "{",
+#        },
+#    },
+#    "handlers": {
+#        "file": {
+#            "level": "INFO",
+#            "class": "logging.FileHandler",
+#            "filename": "C:/Users/Potsu/Desktop/Uni/TMC/mooc-securing-software-24/project1/csb-project1/general.log",
+#            "formatter": "simple",
+#        },
+#    },
+#    "loggers": {
+#        "test": {
+#            "handlers": ["file"],
+#            "level": "INFO",
+#            "propagate": True,
+#        },
+#    },
+#}

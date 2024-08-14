@@ -5,6 +5,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.db import transaction, connection
 from .models import Account
+import logging
+
+logger = logging.getLogger("test")
 
 #Flaw 4: A01:2021 – Broken Access Control
 #@login_required
@@ -14,7 +17,7 @@ from .models import Account
 def transferView(request):
 	if request.method == 'POST':
 		to = User.objects.get(username=request.POST.get('to'))
-		amount = int(request.POST.get('amount'))
+		amount = request.POST.get('amount')
 
 		try:
 			#Flaw 3: A03:2021-Injection
@@ -44,10 +47,16 @@ def transferView(request):
 						#cursor.execute("UPDATE pages_account SET balance = balance + %s WHERE user_id = %s", [amount, recipient_id])
 						cursor.execute("UPDATE pages_account SET balance = balance - " + str(amount) + " WHERE user_id = %s", [request.user.id])
 						cursor.execute("UPDATE pages_account SET balance = balance + " + str(amount) + " WHERE user_id = %s", [recipient_id])
+						#Flaw 5: A09:2021 – Security Logging and Monitoring Failures
+						#logger.info("Transfer: from "+ str(request.user.username) + " to " + str(to.username))
+						#logger.info("UPDATE pages_account SET balance = balance - " + str(amount) + " WHERE user_id = %s", [request.user.id])
+						#logger.info("UPDATE pages_account SET balance = balance + " + str(amount) + " WHERE user_id = %s", [recipient_id])
 				transaction.commit()
 
 		except Exception as e:
 			transaction.rollback()
+			#Flaw 5: A09:2021 – Security Logging and Monitoring Failures
+			#logger.error(f"Transfer failed:  {str(e)}")
 			return HttpResponse(f"An error occurred: {str(e)}", status=500)
 
 	return redirect('/')
