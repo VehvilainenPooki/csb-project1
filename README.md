@@ -25,3 +25,12 @@ Server will launch with:
 python manage.py runserver
 ```
 The server url will be written in the console. Something like http://127.0.0.1:8000/.
+
+## the application
+It is a simple bank app where you can transfer money from your account to another.
+There is 3 account in it:
+
+\<username\>:\<password\>
+- bob:squarepants
+- alice:redqueen
+- patrick:asteroid
