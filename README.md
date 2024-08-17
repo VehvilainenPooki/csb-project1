@@ -1,6 +1,9 @@
 # csb-project1
 This is an university of Helsinki courses project: [https://cybersecuritybase.mooc.fi/](https://cybersecuritybase.mooc.fi/)
 
+> [!CAUTION]
+> This application contains bad and intentional vulnerable code.
+
 ## environment
 - python 3.11 (probably many other versions work also)
 - django
